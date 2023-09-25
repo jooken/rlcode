@@ -1,9 +1,12 @@
-import tkinter as tk
+import tkinter
 
-window = tk.Tk() # 기본 윈도우 생성
+window = tkinter.Tk() # 기본 윈도우 생성
 
 window.title("Hello")
 window.geometry("640x400+100+100") #창의 너비x높이+x좌표+y좌표 지정
 window.resizable(False, False) #창의 상하, 좌우 조절 지정
+
+label=tkinter.Label(window, text="Hello") # 레이블 생성
+label.pack() #위젯 배치
 
 window.mainloop()
