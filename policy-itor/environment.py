@@ -13,6 +13,7 @@ class GraphicDisplay(tk.Tk):
         super(GraphicDisplay, self).__init__()
         self.title('Policy Iteration')
         self.geometry('{0}x{1}'.format(WIDTH * UNIT, HEIGHT * UNIT + 50))
+        self.texts = []
         self.env = Env()
         self.agent = agent
         (self.up, self.down, self.left, self.right), self.shapes = self.load_images()
@@ -20,6 +21,7 @@ class GraphicDisplay(tk.Tk):
         self.text_reward(2, 2, "R : 1.0")
         self.text_reward(1, 2, "R : -1.0")
         self.text_reward(2, 1, "R : -1.0")
+        self.text_reward(3, 2, "R : -1.0")
 
     def load_images(self):
         up = PhotoImage(Image.open("../img/up.png").resize((13,13)))
@@ -58,16 +60,26 @@ class GraphicDisplay(tk.Tk):
             x0, y0, x1, y1 = 0, row, WIDTH*UNIT, row
             canvas.create_line(x0, y0, x1, y1)
 
-        self.rectangle = canvas.create_image(50,50,image=self.shapes[0])
-        canvas.create_image(250, 150, image=self.shapes[1])
-        canvas.create_image(150, 250, image=self.shapes[1])
-        canvas.create_image(250, 250, image=self.shapes[2])
-
+        self.rectangle = self._draw_shape(canvas=canvas, row=0, col=0, image=self.shapes[0])
+        self._draw_shape(canvas=canvas, row=2, col=1, image=self.shapes[1])
+        self._draw_shape(canvas=canvas, row=1, col=2, image=self.shapes[1])
+        self._draw_shape(canvas=canvas, row=2, col=3, image=self.shapes[1])
+        self._draw_shape(canvas=canvas, row=2, col=2, image=self.shapes[2])
         canvas.pack()
         return canvas
 
-    def text_reward(self, x, y, s):
-        pass
+    def _draw_shape(self, canvas, row, col, image):
+        x = col*UNIT+UNIT/2
+        y = row*UNIT+UNIT/2
+        shape = canvas.create_image(x, y, image=image)
+        return shape
+
+    def text_reward(self, row, col, content, font='Helvetica', size=10, style='normal', anchor='nw'):
+        origin_x, origin_y = 5,5
+        x, y = origin_x + (UNIT * row), origin_y + (UNIT *col)
+        font = (font, str(size), style)
+        text = self.canvas.create_text(x, y, fill='black', text=content, font=font, anchor=anchor)
+        return self.texts.append(text)
 
     def evaluate_policy(self):
         pass
