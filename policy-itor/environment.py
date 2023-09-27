@@ -16,6 +16,9 @@ class GraphicDisplay(tk.Tk):
         self.texts = []
         self.env = Env()
         self.agent = agent
+        self.evaluation_count = 0
+        self.improvement_count = 0
+        self.is_moving = 0
         (self.up, self.down, self.left, self.right), self.shapes = self.load_images()
         self.canvas = self._build_canvas()
         self.text_reward(2, 2, "R : 1.0")
@@ -75,23 +78,43 @@ class GraphicDisplay(tk.Tk):
         return shape
 
     def text_reward(self, row, col, content, font='Helvetica', size=10, style='normal', anchor='nw'):
-        origin_x, origin_y = 5,5
+        origin_x, origin_y = 5, 5
         x, y = origin_x + (UNIT * row), origin_y + (UNIT *col)
         font = (font, str(size), style)
         text = self.canvas.create_text(x, y, fill='black', text=content, font=font, anchor=anchor)
         return self.texts.append(text)
 
     def evaluate_policy(self):
-        pass
+        self.evaluation_count += 1
+        for i in self.texts:
+            self.canvas.delete(i)
+        self.agent.policy_evaluation() #<-------
+        self.print_value_table(self.agent.value_table) #------ value function
 
     def improve_policy(self):
-        pass
+        self.improvement_count += 1
 
     def move_by_policy(self):
         pass
 
     def reset(self):
-        pass
+        if self.is_moving == 0:
+            self.evaluation_count = 0
+            self.improvement_count = 0
+
+    def print_value_table(self, value_table):
+        for col in range(WIDTH):
+            for row in range(HEIGHT):
+                self.text_value(col, row, round(value_table[col][row], 2))
+
+    def text_value(self, col, row, content, font='Helvetica', size=10, style='normal', anchor='nw'):
+        origin_x, origin_y = 85, 70
+        x, y = origin_x + (UNIT * row), origin_y + (UNIT * col)
+        font = (font, str(size), style)
+        text = self.canvas.create_text(x,y,fill='black', text=content, font=font, anchor=anchor)
+        return self.texts.append(text)
 
 class Env:
-    pass
+    def __init__(self):
+        self.width = WIDTH
+        self.height = HEIGHT
