@@ -18,6 +18,7 @@ class GraphicDisplay(tk.Tk):
         self.title('Policy Iteration')
         self.geometry('{2}x{3}+{0}+{1}'.format(2600,400,WIDTH * UNIT, HEIGHT * UNIT + 50))
         self.texts = []
+        self.arrows = []
         self.env = Env()
         self.agent = agent
         self.evaluation_count = 0
@@ -99,6 +100,10 @@ class GraphicDisplay(tk.Tk):
 
     def improve_policy(self):
         self.improvement_count += 1
+        for arrow in self.arrows:
+            self.canvas.delete(arrow)
+        self.agent.policy_improvement()
+        self.draw_from_policy(self.agent.policy_table)
 
     def move_by_policy(self):
         pass
@@ -119,6 +124,34 @@ class GraphicDisplay(tk.Tk):
         font = (font, str(size), style)
         text = self.canvas.create_text(x, y, fill='black', text=content, font=font, anchor=anchor)
         return self.texts.append(text)
+    
+    def draw_from_policy(self, policy_table):
+        for col in range(WIDTH):
+            for row in range(HEIGHT):
+                self._draw_on_arrow(row, col, policy_table[row][col])
+
+    def _draw_on_arrow(self, row, col, policy):
+        if self.env.is_final_state([row, col]): return
+
+        if policy[0] > 0: # Left
+            x, y = col * UNIT + 10, row * UNIT + 50
+            arrow = self.canvas.create_image(x, y, image=self.left)
+            self.arrows.append(arrow)
+
+        if policy[1] > 0: # Right
+            x, y = col * UNIT + 90, row * UNIT + 50
+            arrow = self.canvas.create_image(x, y, image=self.right)
+            self.arrows.append(arrow)
+
+        if policy[2] > 0: # Up
+            x, y = col * UNIT + 50, row * UNIT + 10
+            arrow = self.canvas.create_image(x, y, image=self.up)
+            self.arrows.append(arrow)
+
+        if policy[3] > 0: # Down
+            x, y = col * UNIT + 50, row * UNIT + 90
+            arrow = self.canvas.create_image(x, y, image=self.down)
+            self.arrows.append(arrow)
 
 class Env:
     def __init__(self):
