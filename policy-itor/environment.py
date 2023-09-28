@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image
 from PIL.ImageTk import PhotoImage
-
+import time
 
 UNIT = 100  # Pixel Count of a cell
 WIDTH = 6 # Horizontal Cell Count on Grid World
@@ -106,12 +106,50 @@ class GraphicDisplay(tk.Tk):
         self.draw_from_policy(self.agent.policy_table)
 
     def move_by_policy(self):
-        pass
+        # print('improvement_count={0}, is_moving={1}'.format(self.improvement_count, self.is_moving))
+        if self.improvement_count != 0 and self.is_moving == 0:
+            self.is_moving = 1
+
+            self._move_to_origin()
+
+            # self.update()
+            row, col = self._find_rectangle_matrix_pos()
+            while len(self.agent.policy_table[row][col]) != 0:
+                self.after(100, self._move_rectangle(self.agent.get_action([row,col])))
+                row, col = self._find_rectangle_matrix_pos()
+
+            self.is_moving = 0
+
+    def _move_to_origin(self):
+        x, y = self.canvas.coords(self.rectangle)
+        self.canvas.move(self.rectangle, -x +UNIT/2, -y +UNIT/2)
+
+    def _move_rectangle(self, action):
+        self._render()
+        dx, dy = 0, 0
+        if action == 0: dx = -UNIT
+        elif action == 1: dx = UNIT
+        elif action == 2: dy = -UNIT
+        elif action == 3: dy = UNIT
+        self.canvas.move(self.rectangle, dx, dy)
+
+    def _render(self):
+        time.sleep(0.1)
+        self.canvas.tag_raise(self.rectangle)
+        self.update()
+
+    def _find_rectangle_matrix_pos(self):
+        x, y = self.canvas.coords(self.rectangle)
+        # print('x={0},y={1}'.format(x,y))
+        row, col = (y-UNIT/2)/UNIT, (x-UNIT/2)/UNIT
+        # print('row={0},col={1}'.format(row,col))
+        return int(row), int(col)
 
     def reset(self):
         if self.is_moving == 0:
             self.evaluation_count = 0
             self.improvement_count = 0
+            self._move_to_origin()
             for text in self.texts:
                 self.canvas.delete(text)
             for arrow in self.arrows:

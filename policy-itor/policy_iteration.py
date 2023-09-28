@@ -78,6 +78,11 @@ class PolicyIteration:
             next_policy[st_row][st_col] = result
         self.policy_table = next_policy
 
+    def get_action(self, state):
+        policy = self.get_policy(state)
+        policy = np.array(policy)
+        return np.random.choice(4, 1, p=policy)[0]
+
 if __name__ == "__main__":
     env = Env()
     policy_iteration = PolicyIteration(env)
