@@ -4,9 +4,11 @@ from PIL.ImageTk import PhotoImage
 
 
 UNIT = 100  # Pixel Count of a cell
-WIDTH = 5 # Horizontal Cell Count on Grid World
+WIDTH = 6 # Horizontal Cell Count on Grid World
 HEIGHT = 5 # Vertical Cell Count on Grid World
+POSSIBLE_ACTIONS = [0,1,2,3] #Left, Right, Up, Down
 
+OBSTACLE_LOCATIONS=[(1,1),(1,3),(2,1),(2,2),(1,4),(3,3)]
 
 class GraphicDisplay(tk.Tk):
     def __init__(self, agent):
@@ -21,10 +23,9 @@ class GraphicDisplay(tk.Tk):
         self.is_moving = 0
         (self.up, self.down, self.left, self.right), self.shapes = self.load_images()
         self.canvas = self._build_canvas()
-        self.text_reward(2, 2, "R : 1.0")
-        self.text_reward(1, 2, "R : -1.0")
-        self.text_reward(2, 1, "R : -1.0")
-        self.text_reward(3, 2, "R : -1.0")
+        self.text_reward(2, 3, "R : 1.0")
+        for row, col in OBSTACLE_LOCATIONS:
+            self.text_reward(row, col, "R : -1.0")
 
     def load_images(self):
         up = PhotoImage(Image.open("../img/up.png").resize((13,13)))
@@ -63,11 +64,11 @@ class GraphicDisplay(tk.Tk):
             x0, y0, x1, y1 = 0, row, WIDTH*UNIT, row
             canvas.create_line(x0, y0, x1, y1)
 
-        self.rectangle = self._draw_shape(canvas=canvas, row=0, col=0, image=self.shapes[0])
-        self._draw_shape(canvas=canvas, row=2, col=1, image=self.shapes[1])
-        self._draw_shape(canvas=canvas, row=1, col=2, image=self.shapes[1])
-        self._draw_shape(canvas=canvas, row=2, col=3, image=self.shapes[1])
-        self._draw_shape(canvas=canvas, row=2, col=2, image=self.shapes[2])
+        self.rectangle = self._draw_shape(canvas, row=0, col=0, image=self.shapes[0])
+        for row, col in OBSTACLE_LOCATIONS:
+            self._draw_shape(canvas, row, col, image=self.shapes[1])
+        self._draw_shape(canvas, row=2, col=3, image=self.shapes[2])
+
         canvas.pack()
         return canvas
 
@@ -79,7 +80,7 @@ class GraphicDisplay(tk.Tk):
 
     def text_reward(self, row, col, content, font='Helvetica', size=10, style='normal', anchor='nw'):
         origin_x, origin_y = 5, 5
-        x, y = origin_x + (UNIT * row), origin_y + (UNIT *col)
+        x, y = origin_x + (UNIT * col), origin_y + (UNIT *row)
         font = (font, str(size), style)
         text = self.canvas.create_text(x, y, fill='black', text=content, font=font, anchor=anchor)
         return self.texts.append(text)
