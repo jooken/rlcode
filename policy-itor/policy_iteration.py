@@ -3,9 +3,15 @@ from environment import Env, GraphicDisplay
 class PolicyIteration:
     def __init__(self, env):
         self.env = env
+        self.discount_factor = 0.9
+        self.reset()
+
+    def reset(self):
         self.policy_table = [[[0.25, 0.25, 0.25, 0.25]] * env.width for _ in range(env.height)]
         self.value_table = [[0.0] * env.width for _ in range(env.height)]
-        self.discount_factor = 0.9
+
+        for row, col in [ state for state in self.env.get_all_states() if self.env.is_final_state(state)]:
+            self.policy_table[row][col] = []
 
     def policy_evaluation(self):
         next_value_table = [[0.0] * self.env.width for _ in range(self.env.height)]

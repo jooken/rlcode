@@ -112,6 +112,11 @@ class GraphicDisplay(tk.Tk):
         if self.is_moving == 0:
             self.evaluation_count = 0
             self.improvement_count = 0
+            for text in self.texts:
+                self.canvas.delete(text)
+            for arrow in self.arrows:
+                self.canvas.delete(arrow)
+            self.agent.reset()
 
     def print_value_table(self, value_table):
         for col in range(WIDTH):
