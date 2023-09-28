@@ -163,9 +163,9 @@ class Env:
 
     def _init_reward(self):
         reward = [[0]*WIDTH for _ in range(HEIGHT)]
-        for col, row in TARGET_LOCATIONS:
+        for row, col in TARGET_LOCATIONS:
             reward[row][col] = 1.0
-        for col, row in OBSTACLE_LOCATIONS:
+        for row, col in OBSTACLE_LOCATIONS:
             reward[row][col] = -1.0
         return reward
 
