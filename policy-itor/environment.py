@@ -207,7 +207,7 @@ class Env:
 
     def get_reward(self, state, action):
         next_state = self.state_after_action(state, action)
+        next_row, next_col = next_state
         # print('state={0},action={1} -> next_state={2}'.format(state, action, next_state))
-        reward = self.reward[next_state[0]][next_state[1]]
-        # print('reward={0}'.format(reward))
+        reward = self.reward[next_row][next_col]
         return reward

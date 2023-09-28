@@ -1,4 +1,6 @@
 from environment import Env, GraphicDisplay
+import copy
+import numpy as np
 
 class PolicyIteration:
     def __init__(self, env):
@@ -20,7 +22,7 @@ class PolicyIteration:
             value = 0.0
             st_row, st_col = state[0], state[1]
 
-            # print('state={0}'.format(state))
+            # print('state={0}================================'.format(state))
 
             if self.env.is_final_state(state):
                 # print('Final State: ({0},{1})'.format(state[0],state[1]))
@@ -36,20 +38,45 @@ class PolicyIteration:
                         reward + self.discount_factor * next_value
                     )
                 )
-                # print('v={3}|s=({0},{1}),a={2}'.format(st_row, st_col, action, value))
+                # print('r={3},rxt={4},v={5}|s=({0},{1}),a={2}'.format(st_row, st_col, action, reward, next_value, value))
 
             next_value_table[st_row][st_col] = value
 
         self.value_table = next_value_table
 
     def get_value(self, state):
-        return self.value_table[state[0]][state[1]]
+        row, col = state[0], state[1]
+        return self.value_table[row][col]
 
     def get_policy(self, state):
-        return self.policy_table[state[0]][state[1]]
+        row, col = state[0], state[1]
+        return self.policy_table[row][col]
 
     def policy_improvement(self):
-        pass
+        next_policy = copy.deepcopy(self.policy_table)
+        for state in self.env.get_all_states():
+            if self.env.is_final_state(state):
+                continue
+
+            st_row, st_col = state[0], state[1]
+            value_list = []
+            result = [0.0]*4
+            for index, action in enumerate(self.env.possible_actions):
+                next_state = self.env.state_after_action(state, action)
+                reward = self.env.get_reward(state, action)
+                next_value = self.get_value(next_state)
+                value = reward + self.discount_factor * next_value
+                value_list.append(value)
+            
+            max_idx_list = np.argwhere(value_list == np.amax(value_list))
+            max_idx_list = max_idx_list.flatten().tolist()
+            prob = 1 / len(max_idx_list)
+
+            for idx in max_idx_list:
+                result[idx] = prob
+
+            next_policy[st_row][st_col] = result
+        self.policy_table = next_policy
 
 if __name__ == "__main__":
     env = Env()
