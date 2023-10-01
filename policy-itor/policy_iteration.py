@@ -48,9 +48,17 @@ class PolicyIteration:
         row, col = state[0], state[1]
         return self.value_table[row][col]
 
+    def set_value(self, state, value):
+        row, col = state[0], state[1]
+        self.value_table[row][col] = value
+
     def get_policy(self, state):
         row, col = state[0], state[1]
         return self.policy_table[row][col]
+    
+    def set_policy(self, state, policy):
+        row, col = state[0], state[1]
+        self.policy_table[row][col] = policy
 
     def policy_improvement(self):
         next_policy = copy.deepcopy(self.policy_table)
