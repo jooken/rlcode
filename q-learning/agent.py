@@ -9,7 +9,7 @@ class QLearningAgent:
         self.actions = actions
         self.step_size = 0.01
         self.discount_factor = 0.9
-        self.epsilon = 0.1
+        self.epsilon = 0.9
         # 0을 초기값으로 가지는 큐함수 테이블 생성
         self.q_table = defaultdict(lambda: [0.0, 0.0, 0.0, 0.0])
 
@@ -17,7 +17,7 @@ class QLearningAgent:
     def learn(self, state, action, reward, next_state):
         q_1 = self.q_table[state][action]
         q_2 = reward + self.discount_factor * max(self.q_table[next_state])
-        self.q_table[state][action] = self.step_size * (q_2 - q_1)
+        self.q_table[state][action] += self.step_size * (q_2 - q_1)
 
     def from_json(self, json):
         if 'q_table' in json:
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if episode:
         env.print_value_all(agent.q_table)
 
-    for _ in range(100):
+    for _ in range(1000):
         episode += 1
         # 게임 환경과 상태를 초기화
         state = env.reset()

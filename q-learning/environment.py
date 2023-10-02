@@ -21,7 +21,7 @@ class Env(tk.Tk):
         super(Env, self).__init__()
         self.action_space = ['l', 'r', 'u', 'd']
         self.n_actions = len(self.action_space)
-        self.title('SARSA')
+        self.title('Q-Learning')
         self.geometry('{2}x{3}+{0}+{1}'.format(2600,400,WIDTH * UNIT, HEIGHT * UNIT))
         self.shapes = self.load_images()
         self.canvas = self._build_canvas()
